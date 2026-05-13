@@ -187,6 +187,7 @@ function calculate() {
     hi = parts[0].trim();
     mi = parts[1].trim();
     document.getElementById('mask1').value = mi;
+    document.getElementById('host').value = hi;
   }
   let ipInt = ipToInt(hi);
   let m1 = getMask(mi); if (!m1) return;
@@ -242,11 +243,16 @@ function getSystemPreference() {
 }
 
 function applyThemeValue(value) {
-  document.documentElement.setAttribute('data-theme', value);
   const btn = document.getElementById('themeBtn');
-  if (btn) btn.innerHTML = value === 'light'
-    ? '<i class="fa-solid fa-sun"></i>'
-    : '<i class="fa-solid fa-moon"></i>';
+  if (value === 'system') {
+    document.documentElement.removeAttribute('data-theme');
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>';
+  } else {
+    document.documentElement.setAttribute('data-theme', value);
+    if (btn) btn.innerHTML = value === 'light'
+      ? '<i class="fa-solid fa-sun"></i>'
+      : '<i class="fa-solid fa-moon"></i>';
+  }
 }
 
 function cycleTheme() {
@@ -259,7 +265,7 @@ function cycleTheme() {
 
   if (next === null) {
     try { localStorage.removeItem(THEME_KEY); } catch (e) { }
-    applyThemeValue(getSystemPreference());
+    applyThemeValue('system');
   } else {
     try { localStorage.setItem(THEME_KEY, next); } catch (e) { }
     applyThemeValue(next);
@@ -272,11 +278,11 @@ function initTheme() {
   if (saved === 'light' || saved === 'dark') {
     applyThemeValue(saved);
   } else {
-    applyThemeValue(getSystemPreference());
+    applyThemeValue('system');
     window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
       let current = null;
       try { current = localStorage.getItem(THEME_KEY); } catch (err) { }
-      if (current === null) applyThemeValue(e.matches ? 'light' : 'dark');
+      if (current === null) applyThemeValue('system');
     });
   }
 }
