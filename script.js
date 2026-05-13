@@ -235,6 +235,18 @@ function updateBin() {
   document.getElementById('toggleBin').classList.toggle('active', showBin);
 }
 
+function initBinaryPreference() {
+  try {
+    const saved = localStorage.getItem('ipcalc_bin');
+    if (saved !== null) showBin = JSON.parse(saved);
+  } catch (e) { }
+  updateBin();
+}
+
+function saveBinaryPreference() {
+  try { localStorage.setItem('ipcalc_bin', JSON.stringify(showBin)); } catch (e) { }
+}
+
 /* ── Téma ── */
 const THEME_KEY = 'ipcalc_theme';
 
@@ -351,6 +363,7 @@ function buildCheat() {
 /* ── Inicializálás ── */
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+  initBinaryPreference();
   buildCheat();
   renderHistory();
 
@@ -358,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ['host', 'mask1', 'mask2'].forEach(id => {
     document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); calculate(); } });
   });
-  document.getElementById('toggleBin').addEventListener('click', () => { showBin = !showBin; updateBin(); });
+  document.getElementById('toggleBin').addEventListener('click', () => { showBin = !showBin; updateBin(); saveBinaryPreference(); });
   document.getElementById('clearHistory').addEventListener('click', () => {
     calcHistory = [];
     try { localStorage.removeItem('ipcalc_h'); } catch (e) { }
