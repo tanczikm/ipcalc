@@ -1,25 +1,55 @@
+/* ── DOM elemek gyorsítótárazása ── */
+const els = {};
+
+function initElements() {
+  els.toast = document.getElementById('toast');
+  els.host = document.getElementById('host');
+  els.mask1 = document.getElementById('mask1');
+  els.mask2 = document.getElementById('mask2');
+  els.calcForm = document.getElementById('calcForm');
+  els.results = document.getElementById('results');
+  els.resultTable = document.getElementById('resultTable');
+  els.toggleBin = document.getElementById('toggleBin');
+  els.subnetSection = document.getElementById('subnetSection');
+  els.historySection = document.getElementById('historySection');
+  els.historyList = document.getElementById('historyList');
+  els.cheatTable = document.getElementById('cheatTable');
+  els.cheatBody = document.getElementById('cheatBody');
+  els.toggleCheat = document.getElementById('toggleCheat');
+  els.clearHistory = document.getElementById('clearHistory');
+  els.themeBtn = document.getElementById('themeBtn');
+}
+
 /* ── Segédfüggvények ── */
 function ipToInt(ip) {
-  return ip.split('.').reduce((n, o) => (n << 8) + parseInt(o, 10), 0) >>> 0;
+  let parts = ip.split('.');
+  if (parts.length !== 4) return 0;
+  return (((+parts[0] << 24) | (+parts[1] << 16) | (+parts[2] << 8) | +parts[3]) >>> 0);
 }
+
 function intToIp(n) {
-  return [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join('.');
+  return ((n >>> 24) & 255) + '.' + ((n >>> 16) & 255) + '.' + ((n >>> 8) & 255) + '.' + (n & 255);
 }
-function intToBin32(n) {
-  let b = n.toString(2);
-  return '0'.repeat(32 - b.length) + b;
-}
-function formatBin(bin, ml) {
+
+function formatBinFast(n, ml) {
   let out = '';
   for (let oct = 0; oct < 4; oct++) {
-    if (oct) out += '<span style="color:rgba(255,255,255,0.12)">.</span>';
-    for (let b = 0; b < 8; b++) {
-      let p = oct * 8 + b, c = bin[p];
+    if (oct) out += '<span class="bin-dot">.</span>';
+    let shift = (3 - oct) * 8;
+    let byte = (n >>> shift) & 255;
+    for (let b = 7; b >= 0; b--) {
+      let p = oct * 8 + (7 - b);
+      let c = (byte >>> b) & 1;
       out += p < ml ? `<span class="bn">${c}</span>` : c;
     }
   }
   return out;
 }
+
+function intToBin32(n) {
+  return (n >>> 0).toString(2).padStart(32, '0');
+}
+
 function getMask(s) {
   if (!s) return null;
   s = s.trim();
@@ -33,6 +63,7 @@ function getMask(s) {
     return { int: len === 0 ? 0 : ((0xFFFFFFFF << (32 - len)) >>> 0), len };
   }
 }
+
 function getClass(ip) {
   let f = (ip >>> 24) & 255;
   if (f < 128) return 'A osztály';
@@ -41,22 +72,26 @@ function getClass(ip) {
   if (f < 240) return 'D osztály';
   return 'E osztály';
 }
+
 function getType(ip) {
-  let s = intToIp(ip), f = (ip >>> 24) & 255;
-  if (s.startsWith('10.')) return 'private';
-  if (s.startsWith('172.')) { let x = parseInt(s.split('.')[1]); if (x >= 16 && x <= 31) return 'private'; }
-  if (s.startsWith('192.168.')) return 'private';
-  if (s.startsWith('127.')) return 'loopback';
-  if (s.startsWith('169.254.')) return 'link-local';
+  let f = (ip >>> 24) & 255;
+  let s2 = (ip >>> 16) & 255;
+  if (f === 10) return 'private';
+  if (f === 172 && s2 >= 16 && s2 <= 31) return 'private';
+  if (f === 192 && s2 === 168) return 'private';
+  if (f === 127) return 'loopback';
+  if (f === 169 && s2 === 254) return 'link-local';
   if (f >= 224 && f < 240) return 'multicast';
   return 'public';
 }
+
 function badge(cls, txt) { return `<span class="badge ${cls}">${txt}</span>`; }
 
 /* ── Toast ── */
 let toastTimer = null;
 function showToast(msg) {
-  const t = document.getElementById('toast');
+  const t = els.toast;
+  if (!t) return;
   t.textContent = msg;
   t.classList.add('show');
   if (toastTimer) clearTimeout(toastTimer);
@@ -65,7 +100,7 @@ function showToast(msg) {
 
 /* ── Másolás ── */
 function copyText(txt) {
-  navigator.clipboard.writeText(txt).then(() => showToast('Másolva!'));
+  navigator.clipboard.writeText(txt).then(() => showToast('Másolva!')).catch(() => {});
 }
 
 /* ── Sorok felépítése ── */
@@ -77,16 +112,16 @@ function row(label, ipInt, cidr, metaHtml, netSec) {
   let copyVal = ip;
   if (label === 'Hálózati maszk') { disp = ip + ' = /' + cidr; copyVal = ip; }
   if (label === 'Hálózat') { disp = ip + '/' + cidr; copyVal = ip + '/' + cidr; }
-  let bin = formatBin(intToBin32(ipInt), cidr);
+  let bin = formatBinFast(ipInt, cidr);
   let binRaw = intToBin32(ipInt);
   return `<tr class="${netSec ? 'net-section' : ''}">
     <td class="lbl">${label}</td>
     <td class="val">
-      <span class="copy-wrap" onclick="copyText('${copyVal}')" title="Másolás">
-        ${disp}<span class="ci"><i class="fa-regular fa-copy"></i></span>
+      <span class="copy-wrap" data-copy="${copyVal}" title="Másolás">
+        ${disp}<span class="ci"><span class="material-symbols-rounded">content_copy</span></span>
       </span>
     </td>
-    <td class="bin-col" onclick="copyText('${binRaw}')" title="Bináris másolása" style="display:${showBin ? '' : 'none'}">${bin}</td>
+    <td class="bin-col" data-copy="${binRaw}" title="Bináris másolása">${bin}</td>
     <td class="meta">${metaHtml || ''}</td>
   </tr>`;
 }
@@ -95,18 +130,18 @@ function hostsRow(hosts) {
   return `<tr class="net-section">
     <td class="lbl">Hostok/Háló</td>
     <td class="val">
-      <span class="copy-wrap" onclick="copyText('${hosts}')" title="Másolás">
-        ${hosts.toLocaleString('hu-HU')}<span class="ci"><i class="fa-regular fa-copy"></i></span>
+      <span class="copy-wrap" data-copy="${hosts}" title="Másolás">
+        ${hosts.toLocaleString('hu-HU')}<span class="ci"><span class="material-symbols-rounded">content_copy</span></span>
       </span>
     </td>
-    <td class="bin-col" style="display:${showBin ? '' : 'none'}"></td>
+    <td class="bin-col"></td>
     <td class="meta"></td>
   </tr>`;
 }
 
 /* ── Alhálózat vizualizáció ── */
 function renderSubnet(netInt, m1, m2) {
-  let sec = document.getElementById('subnetSection');
+  let sec = els.subnetSection;
   if (!m2 || m2.len <= m1.len || m2.len > 32) { sec.style.display = 'none'; return; }
   let diff = m2.len - m1.len;
   let numSub = Math.pow(2, diff);
@@ -142,18 +177,18 @@ let calcHistory = [];
 try { calcHistory = JSON.parse(localStorage.getItem('ipcalc_h') || '[]'); } catch (e) { }
 
 function renderHistory() {
-  let sec = document.getElementById('historySection');
-  let list = document.getElementById('historyList');
+  let sec = els.historySection;
+  let list = els.historyList;
   if (!calcHistory.length) { sec.style.display = 'none'; return; }
   sec.style.display = 'block';
-  list.innerHTML = calcHistory.map(h => `<div class="history-item" onclick="loadHistory('${h}')">${h}</div>`).join('');
+  list.innerHTML = calcHistory.map(h => `<div class="history-item" data-history="${h}">${h}</div>`).join('');
 }
 
 function loadHistory(e) {
   let [ip, cidr] = e.split('/');
-  document.getElementById('host').value = ip;
-  document.getElementById('mask1').value = cidr;
-  document.getElementById('mask2').value = '';
+  els.host.value = ip;
+  els.mask1.value = cidr;
+  els.mask2.value = '';
   calculate();
 }
 
@@ -168,10 +203,13 @@ function updateUrl(ip, mask, mask2) {
 
 function loadFromUrl() {
   let p = new URLSearchParams(window.location.search);
-  if (p.get('ip')) {
-    document.getElementById('host').value = p.get('ip');
-    if (p.get('mask')) document.getElementById('mask1').value = p.get('mask');
-    if (p.get('mask2')) document.getElementById('mask2').value = p.get('mask2');
+  let ip = p.get('ip');
+  if (ip) {
+    els.host.value = ip;
+    let m = p.get('mask');
+    if (m) els.mask1.value = m;
+    let m2 = p.get('mask2');
+    if (m2) els.mask2.value = m2;
     return true;
   }
   return false;
@@ -179,16 +217,16 @@ function loadFromUrl() {
 
 /* ── Fő számítás ── */
 function calculate() {
-  let hi = document.getElementById('host').value.trim();
-  let mi = document.getElementById('mask1').value.trim() || '24';
-  let m2i = document.getElementById('mask2').value.trim();
+  let hi = els.host.value.trim();
+  let mi = els.mask1.value.trim() || '24';
+  let m2i = els.mask2.value.trim();
   if (!hi) return;
   let parts = hi.split('/');
   if (parts.length === 2) {
     hi = parts[0].trim();
     mi = parts[1].trim();
-    document.getElementById('mask1').value = mi;
-    document.getElementById('host').value = hi;
+    els.mask1.value = mi;
+    els.host.value = hi;
   }
   let ipInt = ipToInt(hi);
   let m1 = getMask(mi); if (!m1) return;
@@ -219,8 +257,8 @@ function calculate() {
   html += row('Host min',       hMinInt, cidr, '', false);
   html += row('Host max',       hMaxInt, cidr, '', false);
   html += hostsRow(hosts);
-  document.getElementById('resultTable').innerHTML = html;
-  document.getElementById('results').classList.add('visible');
+  els.resultTable.innerHTML = html;
+  els.results.classList.add('visible');
   updateBin();
   renderSubnet(netInt, m1, m2);
   let entry = `${intToIp(ipInt)}/${cidr}`;
@@ -232,8 +270,11 @@ function calculate() {
 
 /* ── Bináris kapcsoló ── */
 function updateBin() {
-  document.querySelectorAll('.bin-col').forEach(td => { td.style.display = showBin ? '' : 'none'; });
-  document.getElementById('toggleBin').classList.toggle('active', showBin);
+  const resultCard = els.resultTable?.closest('.result-card');
+  if (resultCard) {
+    resultCard.classList.toggle('hide-bin', !showBin);
+  }
+  els.toggleBin?.classList.toggle('active', showBin);
 }
 
 function initBinaryPreference() {
@@ -256,15 +297,15 @@ function getSystemPreference() {
 }
 
 function applyThemeValue(value) {
-  const btn = document.getElementById('themeBtn');
+  const btn = els.themeBtn || document.getElementById('themeBtn');
   if (value === 'system') {
     document.documentElement.removeAttribute('data-theme');
-    if (btn) btn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>';
+    if (btn) btn.innerHTML = '<span class="material-symbols-rounded">brightness_auto</span>';
   } else {
     document.documentElement.setAttribute('data-theme', value);
     if (btn) btn.innerHTML = value === 'light'
-      ? '<i class="fa-solid fa-sun"></i>'
-      : '<i class="fa-solid fa-moon"></i>';
+      ? '<span class="material-symbols-rounded">light_mode</span>'
+      : '<span class="material-symbols-rounded">dark_mode</span>';
   }
 }
 
@@ -292,7 +333,7 @@ function initTheme() {
     applyThemeValue(saved);
   } else {
     applyThemeValue('system');
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
       let current = null;
       try { current = localStorage.getItem(THEME_KEY); } catch (err) { }
       if (current === null) applyThemeValue('system');
@@ -332,10 +373,12 @@ const MASKS = [
 let cheatVisible = true;
 function toggleCheat() {
   cheatVisible = !cheatVisible;
-  document.getElementById('cheatBody').style.display = cheatVisible ? '' : 'none';
-  document.getElementById('toggleCheat').innerHTML = cheatVisible
-    ? '<i class="fa-solid fa-chevron-up"></i>'
-    : '<i class="fa-solid fa-chevron-down"></i>';
+  if (els.cheatBody) els.cheatBody.style.display = cheatVisible ? '' : 'none';
+  if (els.toggleCheat) {
+    els.toggleCheat.innerHTML = cheatVisible
+      ? '<span class="material-symbols-rounded">expand_less</span>'
+      : '<span class="material-symbols-rounded">expand_more</span>';
+  }
 }
 
 function buildCheat() {
@@ -345,39 +388,54 @@ function buildCheat() {
     html += `<tr>
       <td class="lbl" style="color:var(--accent);font-size:13px;font-weight:600;width:50px">/${cidr}</td>
       <td class="val" style="font-weight:400">
-        <span class="copy-wrap" onclick="copyText('${mask}')" title="Maszk másolása">
-          ${mask}<span class="ci"><i class="fa-regular fa-copy"></i></span>
+        <span class="copy-wrap" data-copy="${mask}" title="Maszk másolása">
+          ${mask}<span class="ci"><span class="material-symbols-rounded">content_copy</span></span>
         </span>
       </td>
       <td class="val" style="color:var(--fg-subtle);font-weight:400;font-size:12px">
-        <span class="copy-wrap" onclick="copyText('${cidr}')" title="CIDR prefix másolása">
-          /${cidr}<span class="ci"><i class="fa-regular fa-copy"></i></span>
+        <span class="copy-wrap" data-copy="${cidr}" title="CIDR prefix másolása">
+          /${cidr}<span class="ci"><span class="material-symbols-rounded">content_copy</span></span>
         </span>
       </td>
       <td class="val" style="color:var(--fg-muted);font-size:12px">${hosts.toLocaleString('hu-HU')} host</td>
       <td class="meta">${noteHtml}</td>
     </tr>`;
   }
-  document.getElementById('cheatTable').innerHTML = html;
+  if (els.cheatTable) els.cheatTable.innerHTML = html;
 }
 
 /* ── Inicializálás ── */
 document.addEventListener('DOMContentLoaded', () => {
+  initElements();
   initTheme();
   initBinaryPreference();
   buildCheat();
   renderHistory();
 
-  document.getElementById('calcForm').addEventListener('submit', e => { e.preventDefault(); calculate(); });
-  ['host', 'mask1', 'mask2'].forEach(id => {
-    document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); calculate(); } });
+  // Delegált eseménykezelés másoláshoz és előzményekhez
+  document.addEventListener('click', e => {
+    const copyTarget = e.target.closest('[data-copy]');
+    if (copyTarget) {
+      copyText(copyTarget.dataset.copy);
+      return;
+    }
+    const historyTarget = e.target.closest('[data-history]');
+    if (historyTarget) {
+      loadHistory(historyTarget.dataset.history);
+      return;
+    }
   });
-  document.getElementById('toggleBin').addEventListener('click', () => { showBin = !showBin; updateBin(); saveBinaryPreference(); });
-  document.getElementById('clearHistory').addEventListener('click', () => {
+
+  els.calcForm?.addEventListener('submit', e => { e.preventDefault(); calculate(); });
+  [els.host, els.mask1, els.mask2].forEach(el => {
+    el?.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); calculate(); } });
+  });
+  els.toggleBin?.addEventListener('click', () => { showBin = !showBin; updateBin(); saveBinaryPreference(); });
+  els.clearHistory?.addEventListener('click', () => {
     calcHistory = [];
-    try { localStorage.removeItem('ipcalc_h'); } catch (e) { }
+    try { localStorage.removeItem('ipcalc_h'); } catch (err) { }
     renderHistory();
   });
 
-  if (!loadFromUrl()) calculate(); else calculate();
+  if (!loadFromUrl()) calculate();
 });

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- Elsődleges meta -->
-<title>IP cím & alhálózat kalkulátor — ipcalc</title>
+<title>IP cím & alhálózat kalkulátor</title>
 <meta name="description" content="Ingyenes IP alhálózat kalkulátor. Számítsd ki a hálózati címet, broadcast-ot, host tartományt, wildcard maszkot, CIDR jelölést és bináris megjelenítést.">
 <meta name="keywords" content="IP kalkulátor, alhálózat kalkulátor, CIDR kalkulátor, subnetting, hálózat kalkulátor, IP alhálózat, ipcalc, netmask kalkulátor">
 <meta name="author" content="ipcalc">
@@ -14,14 +14,14 @@
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="IP cím & alhálózat kalkulátor — ipcalc">
+<meta property="og:title" content="IP cím & alhálózat kalkulátor">
 <meta property="og:description" content="Ingyenes IP alhálózat kalkulátor CIDR jelöléssel, bináris megjelenítéssel és alhálózat lebontással.">
 <meta property="og:url" content="https://ipcalc.example.com/">
 <meta property="og:image" content="icon.webp">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="IP cím & alhálózat kalkulátor — ipcalc">
+<meta name="twitter:title" content="IP cím & alhálózat kalkulátor">
 <meta name="twitter:description" content="Ingyenes IP alhálózat kalkulátor CIDR jelöléssel, bináris megjelenítéssel és alhálózat lebontással.">
 
 <!-- Favicon -->
@@ -29,13 +29,11 @@
 <link rel="shortcut icon" href="icon.webp">
 <link rel="apple-touch-icon" href="icon.webp">
 
-<!-- Betűtípusok -->
+<!-- Betűtípusok és ikonok -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-
-<!-- Ikonok -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
 
 <!-- Stílusok -->
 <link rel="stylesheet" href="style.css">
@@ -45,7 +43,7 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "ipcalc — IP Alhálózat Kalkulátor",
+  "name": "IP cím & alhálózat kalkulátor",
   "description": "IP cím és alhálózat kalkulátor CIDR jelöléssel, bináris megjelenítéssel és alhálózat lebontással.",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any",
@@ -57,12 +55,24 @@
 
 <div id="toast">Másolva!</div>
 
-<div class="topbar">
-  <div class="logo">ip<span>/</span>calc</div>
-  <div class="topbar-sep"></div>
-  <div class="topbar-desc" style="flex:1">IP cím &amp; alhálózat kalkulátor · CIDR · bináris megjelenítés</div>
-  <button class="theme-btn" id="themeBtn" title="Téma váltása" onclick="cycleTheme()"><i class="fa-solid fa-moon"></i></button>
-</div>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-icon">
+        <span class="material-symbols-rounded">lan</span>
+      </div>
+      <div class="brand-text">
+        <div class="logo">ip<span>/</span>calc</div>
+        <div class="brand-sub">IP cím & alhálózat kalkulátor</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="theme-btn" id="themeBtn" title="Téma váltása" onclick="cycleTheme()" aria-label="Téma váltása">
+        <span class="material-symbols-rounded">dark_mode</span>
+      </button>
+    </div>
+  </div>
+</header>
 
 <div class="container">
 
@@ -70,19 +80,19 @@
     <form id="calcForm">
       <div class="form-grid">
         <div class="field">
-          <label>Cím / CIDR</label>
+          <label for="host">Cím / CIDR</label>
           <input type="text" id="host" placeholder="192.168.0.1 vagy /24" value="192.168.0.1" autocomplete="off" spellcheck="false">
         </div>
         <div class="field">
-          <label>Hálózati maszk</label>
+          <label for="mask1">Hálózati maszk</label>
           <input type="text" id="mask1" placeholder="24 vagy 255.255.255.0" value="24" autocomplete="off" spellcheck="false">
         </div>
         <div class="field">
-          <label>2. maszk <span style="font-weight:400;opacity:.5">(opcionális)</span></label>
+          <label for="mask2">2. maszk <span style="font-weight:400;opacity:.5">(opcionális)</span></label>
           <input type="text" id="mask2" placeholder="al- / szuperhálózat" autocomplete="off" spellcheck="false">
         </div>
         <div class="calc-btn-wrap" style="display:flex;align-items:flex-end">
-          <button type="submit" class="calc-btn"><i class="fa-solid fa-play" style="font-size:11px;margin-right:6px"></i>Számítás</button>
+          <button type="submit" class="calc-btn"><span class="material-symbols-rounded">play_arrow</span>Számítás</button>
         </div>
       </div>
     </form>
@@ -90,8 +100,8 @@
 
   <div id="results">
     <div class="results-header">
-      <span class="section-label"><i class="fa-solid fa-network-wired" style="margin-right:6px"></i>Eredmény</span>
-      <button class="toggle-bin active" id="toggleBin"><i class="fa-solid fa-code" style="margin-right:5px"></i>bináris</button>
+      <span class="section-label"><span class="material-symbols-rounded">hub</span>Eredmény</span>
+      <button class="toggle-bin active" id="toggleBin"><span class="material-symbols-rounded">terminal</span>bináris</button>
     </div>
     <div class="result-card">
       <table class="rtable" id="resultTable"></table>
@@ -101,16 +111,16 @@
 
   <div id="historySection" class="history-section" style="display:none">
     <div class="history-header">
-      <span class="section-label"><i class="fa-solid fa-clock-rotate-left" style="margin-right:6px"></i>Előzmények</span>
-      <button class="clear-btn" id="clearHistory"><i class="fa-solid fa-xmark"></i></button>
+      <span class="section-label"><span class="material-symbols-rounded">history</span>Előzmények</span>
+      <button class="clear-btn" id="clearHistory" title="Előzmények törlése"><span class="material-symbols-rounded">delete_outline</span></button>
     </div>
     <div class="history-list" id="historyList"></div>
   </div>
 
   <div class="history-section" style="margin-top:28px">
     <div class="history-header">
-      <span class="section-label"><i class="fa-solid fa-table-list" style="margin-right:6px"></i>Alhálózat referencia</span>
-      <button class="clear-btn" id="toggleCheat" onclick="toggleCheat()"><i class="fa-solid fa-chevron-up"></i></button>
+      <span class="section-label"><span class="material-symbols-rounded">table_chart</span>Alhálózat referencia</span>
+      <button class="clear-btn" id="toggleCheat" onclick="toggleCheat()" title="Összecsukás / Kinyitás"><span class="material-symbols-rounded">expand_less</span></button>
     </div>
     <div id="cheatBody">
       <div class="result-card">
