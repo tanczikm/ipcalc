@@ -1,8 +1,19 @@
+/* ── SVG Ikonok a hálózattól független megjelenítéshez ── */
+const ICONS = {
+  copy: `<svg class="ci" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16" fill="currentColor"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>`,
+  expandLess: `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="m296-345-56-56 240-240 240 240-56 56-184-184-184 184Z"/></svg>`,
+  expandMore: `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>`,
+  lightMode: `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0-83 58.5-141.5T480-280Zm0 80q-117 0-198.5-81.5T200-480q0-117 81.5-198.5T480-760q117 0 198.5 81.5T760-480q0 117-81.5 198.5T480-200Zm0-680h-80v-80h80v80Zm0 880h-80v-80h80v80ZM120-440H40v-80h80v80Zm880 0h-80v-80h80v80ZM238-664l-56-56 56-56 56 56-56 56Zm538 538-56-56 56-56 56 56-56 56ZM182-182l56-56 56 56-56 56-56-56Zm538-538l56-56 56 56-56 56-56-56Z"/></svg>`,
+  darkMode: `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t76-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>`,
+  autoMode: `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm40-83q119-15 199.5-99.5T800-480q0-133-93.5-226.5T480-800v637Z"/></svg>`
+};
+
 /* ── DOM elemek gyorsítótárazása ── */
 const els = {};
 
 function initElements() {
   els.toast = document.getElementById('toast');
+  els.toastMsg = document.getElementById('toastMsg');
   els.host = document.getElementById('host');
   els.mask1 = document.getElementById('mask1');
   els.mask2 = document.getElementById('mask2');
@@ -18,6 +29,7 @@ function initElements() {
   els.toggleCheat = document.getElementById('toggleCheat');
   els.clearHistory = document.getElementById('clearHistory');
   els.themeBtn = document.getElementById('themeBtn');
+  els.offlineStatus = document.getElementById('offlineStatus');
 }
 
 /* ── Segédfüggvények ── */
@@ -85,22 +97,37 @@ function getType(ip) {
   return 'public';
 }
 
-function badge(cls, txt) { return `<span class="badge ${cls}">${txt}</span>`; }
-
-/* ── Toast ── */
-let toastTimer = null;
-function showToast(msg) {
-  const t = els.toast;
-  if (!t) return;
-  t.textContent = msg;
-  t.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 1500);
+function badge(cls, txt) {
+  return `<span class="badge ${cls}">${txt}</span>`;
 }
 
-/* ── Másolás ── */
+/* ── Toast (MD3 Snackbar) ── */
+let toastTimer = null;
+function showToast(msg = 'Másolva!') {
+  const t = els.toast;
+  const tm = els.toastMsg;
+  if (!t) return;
+  if (tm) tm.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+/* ── Másolás a vágólapra ── */
 function copyText(txt) {
-  navigator.clipboard.writeText(txt).then(() => showToast('Másolva!')).catch(() => {});
+  if (!navigator.clipboard) {
+    const el = document.createElement('textarea');
+    el.value = txt;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('Másolva: ' + txt);
+    return;
+  }
+  navigator.clipboard.writeText(txt)
+    .then(() => showToast('Másolva: ' + txt))
+    .catch(() => showToast('Másolva!'));
 }
 
 /* ── Sorok felépítése ── */
@@ -117,8 +144,8 @@ function row(label, ipInt, cidr, metaHtml, netSec) {
   return `<tr class="${netSec ? 'net-section' : ''}">
     <td class="lbl">${label}</td>
     <td class="val">
-      <span class="copy-wrap" data-copy="${copyVal}" title="Másolás">
-        ${disp}<span class="ci"><span class="material-symbols-rounded">content_copy</span></span>
+      <span class="copy-wrap" data-copy="${copyVal}" title="Másolás vágólapra">
+        ${disp}${ICONS.copy}
       </span>
     </td>
     <td class="bin-col" data-copy="${binRaw}" title="Bináris másolása">${bin}</td>
@@ -130,8 +157,8 @@ function hostsRow(hosts) {
   return `<tr class="net-section">
     <td class="lbl">Hostok/Háló</td>
     <td class="val">
-      <span class="copy-wrap" data-copy="${hosts}" title="Másolás">
-        ${hosts.toLocaleString('hu-HU')}<span class="ci"><span class="material-symbols-rounded">content_copy</span></span>
+      <span class="copy-wrap" data-copy="${hosts}" title="Másolás vágólapra">
+        ${hosts.toLocaleString('hu-HU')}${ICONS.copy}
       </span>
     </td>
     <td class="bin-col"></td>
@@ -147,7 +174,7 @@ function renderSubnet(netInt, m1, m2) {
   let numSub = Math.pow(2, diff);
   let hps = m2.len < 31 ? Math.pow(2, 32 - m2.len) - 2 : (m2.len === 31 ? 2 : 1);
   let blockSize = Math.pow(2, 32 - m2.len);
-  let cols = ['#0099d5', '#22c578', '#f0a04a', '#ff6b6b', '#b07ef7', '#4adfe0', '#e0a04a', '#d54f6b'];
+  let cols = ['#0b57d0', '#146c2e', '#e37400', '#b3261e', '#7c3aed', '#0284c7', '#d97706', '#db2777'];
   let maxShow = Math.min(numSub, 8);
   let segs = '';
   for (let i = 0; i < maxShow; i++) {
@@ -156,12 +183,12 @@ function renderSubnet(netInt, m1, m2) {
     let col = cols[i % cols.length];
     let pct = 100 / maxShow;
     let lbl = numSub <= 8 ? ip : (i < maxShow - 1 ? ip : '…');
-    segs += `<div class="subnet-seg" style="width:${pct}%;background:${col}18;border-right:1px solid ${col}30;color:${col}" title="${ip}/${m2.len}">${lbl}</div>`;
+    segs += `<div class="subnet-seg" style="width:${pct}%;background:${col}20;border-right:1px solid ${col}40;color:${col}" title="${ip}/${m2.len}">${lbl}</div>`;
   }
   sec.style.display = 'block';
   sec.innerHTML = `<div class="subnet-card">
-    <div class="results-header">
-      <span class="section-label">Alhálózat vizualizáció — /${m2.len} a /${m1.len}-en belül</span>
+    <div class="subnet-card-header">
+      Alhálózat vizualizáció — /${m2.len} maszk a /${m1.len}-en belül
     </div>
     <div class="subnet-bar">${segs}</div>
     <div class="subnet-info">
@@ -181,7 +208,7 @@ function renderHistory() {
   let list = els.historyList;
   if (!calcHistory.length) { sec.style.display = 'none'; return; }
   sec.style.display = 'block';
-  list.innerHTML = calcHistory.map(h => `<div class="history-item" data-history="${h}">${h}</div>`).join('');
+  list.innerHTML = calcHistory.map(h => `<button type="button" class="history-item" data-history="${h}" title="Betöltés">${h}</button>`).join('');
 }
 
 function loadHistory(e) {
@@ -192,7 +219,7 @@ function loadHistory(e) {
   calculate();
 }
 
-/* ── URL szinkron ── */
+/* ── URL szinkronizáció ── */
 function updateUrl(ip, mask, mask2) {
   let params = new URLSearchParams();
   params.set('ip', ip);
@@ -247,34 +274,50 @@ function calculate() {
   if (type === 'multicast')  typeBadge = badge('badge-mc', 'Multicast');
   if (type === 'loopback')   typeBadge = badge('badge-class', 'Loopback');
   if (type === 'link-local') typeBadge = badge('badge-class', 'Link-local');
-  let html = '';
-  html += row('Cím',            ipInt,   cidr, '', false);
-  html += row('Hálózati maszk', mInt,    cidr, '', false);
-  html += row('Wildcard',       wildInt, cidr, '', false);
-  html += `<tr><td class="divider" colspan="4"></td></tr>`;
-  html += row('Hálózat',        netInt,  cidr, `<div class="badges">${clsBadge}${typeBadge}</div>`, true);
-  html += row('Broadcast',      bcInt,   cidr, '', false);
-  html += row('Host min',       hMinInt, cidr, '', false);
-  html += row('Host max',       hMaxInt, cidr, '', false);
-  html += hostsRow(hosts);
-  els.resultTable.innerHTML = html;
-  els.results.classList.add('visible');
+
+  // Táblázat fejléc és sorok összeállítása
+  // Sorrend követelmény: Hálózat alatt -> Host min -> Host max -> Broadcast
+  let thead = `<thead>
+    <tr>
+      <th style="width:160px">Paraméter</th>
+      <th>Érték</th>
+      <th class="bin-col-header">Bináris reprezentáció</th>
+      <th style="width:140px">Információ</th>
+    </tr>
+  </thead>`;
+
+  let tbody = '<tbody>';
+  tbody += row('Cím',            ipInt,   cidr, '', false);
+  tbody += row('Hálózati maszk', mInt,    cidr, '', false);
+  tbody += row('Wildcard',       wildInt, cidr, '', false);
+  tbody += `<tr><td colspan="4" class="table-divider"></td></tr>`;
+  tbody += row('Hálózat',        netInt,  cidr, `<div class="badges">${clsBadge}${typeBadge}</div>`, true);
+  tbody += row('Host min',       hMinInt, cidr, '', false);
+  tbody += row('Host max',       hMaxInt, cidr, '', false);
+  tbody += row('Broadcast',      bcInt,   cidr, '', false);
+  tbody += hostsRow(hosts);
+  tbody += '</tbody>';
+
+  els.resultTable.innerHTML = thead + tbody;
   updateBin();
   renderSubnet(netInt, m1, m2);
+
   let entry = `${intToIp(ipInt)}/${cidr}`;
-  calcHistory = [entry, ...calcHistory.filter(h => h !== entry)].slice(0, 8);
+  calcHistory = [entry, ...calcHistory.filter(h => h !== entry)].slice(0, 10);
   try { localStorage.setItem('ipcalc_h', JSON.stringify(calcHistory)); } catch (e) { }
   renderHistory();
   updateUrl(intToIp(ipInt), cidr, m2i || '');
 }
 
-/* ── Bináris kapcsoló ── */
+/* ── Bináris nézet kapcsoló ── */
 function updateBin() {
   const resultCard = els.resultTable?.closest('.result-card');
   if (resultCard) {
     resultCard.classList.toggle('hide-bin', !showBin);
   }
-  els.toggleBin?.classList.toggle('active', showBin);
+  if (els.toggleBin) {
+    els.toggleBin.classList.toggle('active', showBin);
+  }
 }
 
 function initBinaryPreference() {
@@ -289,23 +332,17 @@ function saveBinaryPreference() {
   try { localStorage.setItem('ipcalc_bin', JSON.stringify(showBin)); } catch (e) { }
 }
 
-/* ── Téma ── */
+/* ── Témakezelés (MD3) ── */
 const THEME_KEY = 'ipcalc_theme';
-
-function getSystemPreference() {
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-}
 
 function applyThemeValue(value) {
   const btn = els.themeBtn || document.getElementById('themeBtn');
   if (value === 'system') {
     document.documentElement.removeAttribute('data-theme');
-    if (btn) btn.innerHTML = '<span class="material-symbols-rounded">brightness_auto</span>';
+    if (btn) btn.innerHTML = ICONS.autoMode;
   } else {
     document.documentElement.setAttribute('data-theme', value);
-    if (btn) btn.innerHTML = value === 'light'
-      ? '<span class="material-symbols-rounded">light_mode</span>'
-      : '<span class="material-symbols-rounded">dark_mode</span>';
+    if (btn) btn.innerHTML = value === 'light' ? ICONS.lightMode : ICONS.darkMode;
   }
 }
 
@@ -375,33 +412,73 @@ function toggleCheat() {
   cheatVisible = !cheatVisible;
   if (els.cheatBody) els.cheatBody.style.display = cheatVisible ? '' : 'none';
   if (els.toggleCheat) {
-    els.toggleCheat.innerHTML = cheatVisible
-      ? '<span class="material-symbols-rounded">expand_less</span>'
-      : '<span class="material-symbols-rounded">expand_more</span>';
+    els.toggleCheat.innerHTML = cheatVisible ? ICONS.expandLess : ICONS.expandMore;
   }
 }
 
 function buildCheat() {
-  let html = '';
+  let thead = `<thead>
+    <tr>
+      <th style="width:70px">Prefix</th>
+      <th>Alhálózati maszk</th>
+      <th>CIDR</th>
+      <th>Használható host</th>
+      <th>Megjegyzés</th>
+    </tr>
+  </thead>`;
+
+  let tbody = '<tbody>';
   for (let [cidr, mask, hosts, note] of MASKS) {
-    let noteHtml = note ? `<span class="badge badge-class" style="font-size:9px;padding:2px 7px">${note}</span>` : '';
-    html += `<tr>
-      <td class="lbl" style="color:var(--accent);font-size:13px;font-weight:600;width:50px">/${cidr}</td>
-      <td class="val" style="font-weight:400">
+    let noteHtml = note ? `<span class="badge badge-class">${note}</span>` : '';
+    tbody += `<tr>
+      <td class="lbl" style="color:var(--md-sys-color-primary);font-family:var(--font-mono);font-size:0.9rem">/${cidr}</td>
+      <td class="val">
         <span class="copy-wrap" data-copy="${mask}" title="Maszk másolása">
-          ${mask}<span class="ci"><span class="material-symbols-rounded">content_copy</span></span>
+          ${mask}${ICONS.copy}
         </span>
       </td>
-      <td class="val" style="color:var(--fg-subtle);font-weight:400;font-size:12px">
-        <span class="copy-wrap" data-copy="${cidr}" title="CIDR prefix másolása">
-          /${cidr}<span class="ci"><span class="material-symbols-rounded">content_copy</span></span>
+      <td class="val" style="color:var(--md-sys-color-on-surface-variant)">
+        <span class="copy-wrap" data-copy="/${cidr}" title="Prefix másolása">
+          /${cidr}${ICONS.copy}
         </span>
       </td>
-      <td class="val" style="color:var(--fg-muted);font-size:12px">${hosts.toLocaleString('hu-HU')} host</td>
+      <td class="val">${hosts.toLocaleString('hu-HU')} host</td>
       <td class="meta">${noteHtml}</td>
     </tr>`;
   }
-  if (els.cheatTable) els.cheatTable.innerHTML = html;
+  tbody += '</tbody>';
+
+  if (els.cheatTable) els.cheatTable.innerHTML = thead + tbody;
+  if (els.toggleCheat) els.toggleCheat.innerHTML = ICONS.expandLess;
+}
+
+/* ── Service Worker & Offline támogatás ── */
+function initServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').then(reg => {
+        // Gyorsítótár aktív
+      }).catch(err => {
+        console.warn('Service Worker regisztrációs hiba:', err);
+      });
+    });
+  }
+
+  function updateNetworkStatus() {
+    const badge = els.offlineStatus || document.getElementById('offlineStatus');
+    if (!badge) return;
+    if (!navigator.onLine) {
+      badge.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16" fill="currentColor"><path d="M792-56 671-177q-25 8-51.5 12.5T565-160h-85v-80h85q17 0 33-3t31-9L458-423l-34 34-114-114 57-57 57 57 28-28-216-216-56 56-64-64 56-56L56-792l56-56 736 736-56 56Z"/></svg> Offline mód`;
+      badge.title = 'Nincs internetkapcsolat, az oldal helyi gyorsítótárból fut';
+    } else {
+      badge.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16" fill="currentColor"><path d="M414-280 612-478l-56-56-142 142-58-58-56 56 114 114ZM260-160q-91 0-155.5-63T40-377q0-78 47-139t123-78q25-92 100-149t170-57q117 0 198.5 81.5T760-520q69 8 114.5 59.5T920-340q0 75-52.5 127.5T740-160H260Zm0-80h480q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-80q0-83-58.5-141.5T480-720q-83 0-141.5 58.5T280-520h-20q-58 0-99 41t-41 99q0 58 41 99t99 41Zm220-260Z"/></svg> Offline kész`;
+      badge.title = 'Minden tartalom gyorsítótárazva az offline működéshez';
+    }
+  }
+
+  window.addEventListener('online', updateNetworkStatus);
+  window.addEventListener('offline', updateNetworkStatus);
+  updateNetworkStatus();
 }
 
 /* ── Inicializálás ── */
@@ -411,30 +488,55 @@ document.addEventListener('DOMContentLoaded', () => {
   initBinaryPreference();
   buildCheat();
   renderHistory();
+  initServiceWorker();
 
-  // Delegált eseménykezelés másoláshoz és előzményekhez
+  // Másolás és előzmények delegált eseménykezelése
   document.addEventListener('click', e => {
     const copyTarget = e.target.closest('[data-copy]');
     if (copyTarget) {
       copyText(copyTarget.dataset.copy);
       return;
     }
+
     const historyTarget = e.target.closest('[data-history]');
     if (historyTarget) {
       loadHistory(historyTarget.dataset.history);
       return;
     }
+
+    const presetTarget = e.target.closest('[data-mask]');
+    if (presetTarget) {
+      els.mask1.value = presetTarget.dataset.mask;
+      calculate();
+      return;
+    }
   });
 
-  els.calcForm?.addEventListener('submit', e => { e.preventDefault(); calculate(); });
-  [els.host, els.mask1, els.mask2].forEach(el => {
-    el?.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); calculate(); } });
+  els.calcForm?.addEventListener('submit', e => {
+    e.preventDefault();
+    calculate();
   });
-  els.toggleBin?.addEventListener('click', () => { showBin = !showBin; updateBin(); saveBinaryPreference(); });
+
+  [els.host, els.mask1, els.mask2].forEach(el => {
+    el?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        calculate();
+      }
+    });
+  });
+
+  els.toggleBin?.addEventListener('click', () => {
+    showBin = !showBin;
+    updateBin();
+    saveBinaryPreference();
+  });
+
   els.clearHistory?.addEventListener('click', () => {
     calcHistory = [];
     try { localStorage.removeItem('ipcalc_h'); } catch (err) { }
     renderHistory();
+    showToast('Előzmények törölve');
   });
 
   if (!loadFromUrl()) calculate();
