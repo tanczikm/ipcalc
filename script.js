@@ -1,11 +1,11 @@
-/* ── SVG Ikonok a hálózattól független megjelenítéshez ── */
+/* ── Anyagtervezési (MD3) Vektoros Ikonok ── */
 const ICONS = {
-  copy: `<svg class="ci" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16" fill="currentColor"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>`,
-  expandLess: `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="m296-345-56-56 240-240 240 240-56 56-184-184-184 184Z"/></svg>`,
-  expandMore: `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>`,
-  lightMode: `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0-83 58.5-141.5T480-280Zm0 80q-117 0-198.5-81.5T200-480q0-117 81.5-198.5T480-760q117 0 198.5 81.5T760-480q0 117-81.5 198.5T480-200Zm0-680h-80v-80h80v80Zm0 880h-80v-80h80v80ZM120-440H40v-80h80v80Zm880 0h-80v-80h80v80ZM238-664l-56-56 56-56 56 56-56 56Zm538 538-56-56 56-56 56 56-56 56ZM182-182l56-56 56 56-56 56-56-56Zm538-538l56-56 56 56-56 56-56-56Z"/></svg>`,
-  darkMode: `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t76-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>`,
-  autoMode: `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm40-83q119-15 199.5-99.5T800-480q0-133-93.5-226.5T480-800v637Z"/></svg>`
+  copy: `<svg class="ci" xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" width="15" fill="currentColor"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>`,
+  expandLess: `<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="m296-345-56-56 240-240 240 240-56 56-184-184-184 184Z"/></svg>`,
+  expandMore: `<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>`,
+  lightMode: `<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0-83 58.5-141.5T480-280Zm0 80q-117 0-198.5-81.5T200-480q0-117 81.5-198.5T480-760q117 0 198.5 81.5T760-480q0 117-81.5 198.5T480-200Zm0-680h-80v-80h80v80Zm0 880h-80v-80h80v80ZM120-440H40v-80h80v80Zm880 0h-80v-80h80v80ZM238-664l-56-56 56-56 56 56-56 56Zm538 538-56-56 56-56 56 56-56 56ZM182-182l56-56 56 56-56 56-56-56Zm538-538l56-56 56 56-56 56-56-56Z"/></svg>`,
+  darkMode: `<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t76-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>`,
+  autoMode: `<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm40-83q119-15 199.5-99.5T800-480q0-133-93.5-226.5T480-800v637Z"/></svg>`
 };
 
 /* ── DOM elemek gyorsítótárazása ── */
@@ -29,7 +29,6 @@ function initElements() {
   els.toggleCheat = document.getElementById('toggleCheat');
   els.clearHistory = document.getElementById('clearHistory');
   els.themeBtn = document.getElementById('themeBtn');
-  els.offlineStatus = document.getElementById('offlineStatus');
 }
 
 /* ── Segédfüggvények ── */
@@ -110,7 +109,7 @@ function showToast(msg = 'Másolva!') {
   if (tm) tm.textContent = msg;
   t.classList.add('show');
   if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1500);
 }
 
 /* ── Másolás a vágólapra ── */
@@ -276,13 +275,13 @@ function calculate() {
   if (type === 'link-local') typeBadge = badge('badge-class', 'Link-local');
 
   // Táblázat fejléc és sorok összeállítása
-  // Sorrend követelmény: Hálózat alatt -> Host min -> Host max -> Broadcast
+  // Sorrend: Hálózat -> Host min -> Host max -> Broadcast
   let thead = `<thead>
     <tr>
-      <th style="width:160px">Paraméter</th>
+      <th style="width:130px">Paraméter</th>
       <th>Érték</th>
       <th class="bin-col-header">Bináris reprezentáció</th>
-      <th style="width:140px">Információ</th>
+      <th style="width:120px">Információ</th>
     </tr>
   </thead>`;
 
@@ -419,7 +418,7 @@ function toggleCheat() {
 function buildCheat() {
   let thead = `<thead>
     <tr>
-      <th style="width:70px">Prefix</th>
+      <th style="width:60px">Prefix</th>
       <th>Alhálózati maszk</th>
       <th>CIDR</th>
       <th>Használható host</th>
@@ -431,7 +430,7 @@ function buildCheat() {
   for (let [cidr, mask, hosts, note] of MASKS) {
     let noteHtml = note ? `<span class="badge badge-class">${note}</span>` : '';
     tbody += `<tr>
-      <td class="lbl" style="color:var(--md-sys-color-primary);font-family:var(--font-mono);font-size:0.9rem">/${cidr}</td>
+      <td class="lbl" style="color:var(--md-sys-color-primary);font-family:var(--font-mono);font-size:0.85rem">/${cidr}</td>
       <td class="val">
         <span class="copy-wrap" data-copy="${mask}" title="Maszk másolása">
           ${mask}${ICONS.copy}
@@ -452,33 +451,15 @@ function buildCheat() {
   if (els.toggleCheat) els.toggleCheat.innerHTML = ICONS.expandLess;
 }
 
-/* ── Service Worker & Offline támogatás ── */
+/* ── Service Worker a háttérbeli teljes offline működéshez ── */
 function initServiceWorker() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').then(reg => {
-        // Gyorsítótár aktív
-      }).catch(err => {
+      navigator.serviceWorker.register('./sw.js').catch(err => {
         console.warn('Service Worker regisztrációs hiba:', err);
       });
     });
   }
-
-  function updateNetworkStatus() {
-    const badge = els.offlineStatus || document.getElementById('offlineStatus');
-    if (!badge) return;
-    if (!navigator.onLine) {
-      badge.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16" fill="currentColor"><path d="M792-56 671-177q-25 8-51.5 12.5T565-160h-85v-80h85q17 0 33-3t31-9L458-423l-34 34-114-114 57-57 57 57 28-28-216-216-56 56-64-64 56-56L56-792l56-56 736 736-56 56Z"/></svg> Offline mód`;
-      badge.title = 'Nincs internetkapcsolat, az oldal helyi gyorsítótárból fut';
-    } else {
-      badge.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16" fill="currentColor"><path d="M414-280 612-478l-56-56-142 142-58-58-56 56 114 114ZM260-160q-91 0-155.5-63T40-377q0-78 47-139t123-78q25-92 100-149t170-57q117 0 198.5 81.5T760-520q69 8 114.5 59.5T920-340q0 75-52.5 127.5T740-160H260Zm0-80h480q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-80q0-83-58.5-141.5T480-720q-83 0-141.5 58.5T280-520h-20q-58 0-99 41t-41 99q0 58 41 99t99 41Zm220-260Z"/></svg> Offline kész`;
-      badge.title = 'Minden tartalom gyorsítótárazva az offline működéshez';
-    }
-  }
-
-  window.addEventListener('online', updateNetworkStatus);
-  window.addEventListener('offline', updateNetworkStatus);
-  updateNetworkStatus();
 }
 
 /* ── Inicializálás ── */
@@ -501,13 +482,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyTarget = e.target.closest('[data-history]');
     if (historyTarget) {
       loadHistory(historyTarget.dataset.history);
-      return;
-    }
-
-    const presetTarget = e.target.closest('[data-mask]');
-    if (presetTarget) {
-      els.mask1.value = presetTarget.dataset.mask;
-      calculate();
       return;
     }
   });
