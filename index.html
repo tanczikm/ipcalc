@@ -64,8 +64,8 @@
 
 <!-- Toast / Értesítés -->
 <div id="toast" class="toast" role="status" aria-live="polite">
-  <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16" fill="currentColor">
-    <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/>
+  <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16" fill="currentColor">
+    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
   </svg>
   <span id="toastMsg">Másolva!</span>
 </div>
@@ -75,8 +75,8 @@
   <!-- Fejléc -->
   <header>
     <h1>
-      <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="26" viewBox="0 -960 960 960" width="26" fill="currentColor">
-        <path d="M160-160v-200h160v80h120v-80h-80v-200h240v200h-80v80h120v-80h160v200H640v-80H520v80H440v-80H320v80H160Zm80-80h80v-40h-80v40Zm480 0h80v-40h-80v40ZM480-600h80v-40h-80v40Z"/>
+      <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor">
+        <path d="M13 22h8v-7h-3v-4h-4V7h2V3h-8v4h2v4H6v4H3v7h8v-7H9v-2h6v2h-2v7zM5 17h4v3H5v-3zm10 0h4v3h-4v-3zM9 5h2v2H9V5z"/>
       </svg>
       ipcalc
     </h1>
@@ -87,7 +87,7 @@
     </div>
   </header>
 
-  <!-- Számítási űrlap kártya (Egy sorban a mezők és a gomb) -->
+  <!-- Számítási űrlap kártya -->
   <div class="form-card">
     <form id="calcForm">
       <div class="form-grid">
@@ -105,8 +105,8 @@
         </div>
         <div class="calc-btn-wrap">
           <button type="submit" class="btn btn-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor">
-              <path d="m380-300 280-180-280-180v360Z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
             </svg>
             Számítás
           </button>
@@ -120,15 +120,15 @@
     <div class="result-card">
       <div class="results-header">
         <span class="section-label">
-          <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor">
-            <path d="M440-280v-120H320q-33 0-56.5-23.5T240-480q0-33 23.5-56.5T320-560h120v-120h80v120h120q33 0 56.5 23.5T720-480q0 33-23.5 56.5T640-400H520v120h-80Zm-280-80q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35Zm640 0q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35ZM480-680q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35Z"/>
+          <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20" fill="currentColor">
+            <path d="m17 16-4-4V8.82C14.16 8.4 15 7.3 15 6c0-1.66-1.34-3-3-3S9 4.34 9 6c0 1.3.84 2.4 2 2.82V12l-4 4H3v5h5v-3.05l4-4.2 4 4.2V21h5v-5h-4z"/>
           </svg>
           Eredmény
         </span>
         <div class="btn-group">
           <button type="button" class="btn-toggle active" id="toggleBin" title="Bináris oszlop megjelenítése/elrejtése">
-            <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 -960 960 960" width="15" fill="currentColor">
-              <path d="m384-336 56 56-160 160-56-56 160-160Zm176 176v-80h240v80H560ZM280-600l160-160-56-56-160 160 56 56Zm280 40v-80h240v80H560Z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" height="15" viewBox="0 0 24 24" width="15" fill="currentColor">
+              <path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
             </svg>
             bináris
           </button>
@@ -145,14 +145,14 @@
   <div id="historySection" class="history-section" style="display:none">
     <div class="history-header">
       <span class="section-label">
-        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor">
-          <path d="M480-80q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440h80q0 117 81.5 198.5T480-160q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720h-6l62 62-56 58-160-160 160-160 56 58-62 62h6q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80Zm-40-200v-200l140 82-40 68-100-60v110h-80Z"/>
+        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18" fill="currentColor">
+          <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7a6.97 6.97 0 0 1-4.95-2.05l-1.41 1.41C8.2 20.02 10.46 21 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
         </svg>
         Előzmények
       </span>
       <button class="btn-icon" id="clearHistory" title="Előzmények törlése" aria-label="Előzmények törlése">
-        <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16" fill="currentColor">
-          <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T760-120H280Zm480-600H280v520h480v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+        <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16" fill="currentColor">
+          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5-1-1h-5l-1 1H5v2h14V4h-3.5z"/>
         </svg>
       </button>
     </div>
@@ -163,8 +163,8 @@
   <div class="cheat-section">
     <div class="card-header">
       <span class="section-label">
-        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor">
-          <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h160v-160H200v160Zm240 0h160v-160H440v160Zm240 0h80v-160h-80v160ZM200-440h160v-160H200v160Zm240 0h160v-160H440v160Zm240 0h80v-160h-80v160ZM200-680h160v-80H200v80Zm240 0h160v-80H440v80Zm240 0h80v-80h-80v80Z"/>
+        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18" fill="currentColor">
+          <path d="M10 10.02h5V21h-5zM17 21h3c1.1 0 2-.9 2-2v-9h-5v11zm3-18H4c-1.1 0-2 .9-2 2v3h20V5c0-1.1-.9-2-2-2zM3 19c0 1.1.9 2 2 2h3V10H3v9z"/>
         </svg>
         Alhálózat referencia
       </span>

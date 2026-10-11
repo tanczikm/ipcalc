@@ -126,6 +126,10 @@
     padding: 0;
 }
 
+html, body {
+    overflow-x: hidden;
+}
+
 body {
     background-color: var(--md-sys-color-surface);
     color: var(--md-sys-color-on-surface);
@@ -138,6 +142,15 @@ body {
 .container {
     max-width: 900px;
     margin: 0 auto;
+    width: 100%;
+}
+
+/* SVG Ikonok védelme a levágódás ellen */
+svg {
+    overflow: visible;
+    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /* Header */
@@ -209,25 +222,12 @@ h1 svg {
     color: var(--md-sys-color-primary);
 }
 
-/* Form Styles - Egy sorban a cím, maszk, 2. maszk és a számítás gomb */
+/* Form Styles */
 .form-grid {
     display: grid;
     grid-template-columns: 1.2fr 1fr 1fr auto;
     gap: 12px;
     align-items: flex-end;
-}
-
-@media (max-width: 640px) {
-    .form-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-    .calc-btn-wrap {
-        grid-column: 1 / -1;
-    }
-    .calc-btn-wrap .btn {
-        width: 100%;
-    }
 }
 
 .field {
@@ -357,6 +357,7 @@ h1 svg {
 /* Tables */
 .table-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     width: 100%;
 }
 
@@ -656,4 +657,111 @@ tr:hover td {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
+}
+
+/* ── Mobil Reszponzív Finomhangolás ── */
+@media (max-width: 640px) {
+    body {
+        padding: 10px 8px 24px;
+    }
+
+    header {
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+    }
+
+    h1 {
+        font-size: 1.15rem;
+    }
+
+    .form-card {
+        padding: 12px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .form-grid .field:first-child {
+        grid-column: 1 / -1;
+    }
+
+    .calc-btn-wrap {
+        grid-column: 1 / -1;
+    }
+
+    .calc-btn-wrap .btn {
+        width: 100%;
+    }
+
+    .results-header,
+    .history-header,
+    .card-header {
+        padding: 8px 12px;
+        min-height: 40px;
+    }
+
+    th, td {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    th {
+        font-size: 0.72rem;
+    }
+
+    .lbl {
+        width: 95px;
+        font-size: 0.78rem;
+    }
+
+    .val {
+        font-size: 0.82rem;
+    }
+
+    .copy-wrap {
+        padding: 2px 4px;
+        font-size: 0.82rem;
+    }
+
+    .bin-col {
+        font-size: 0.72rem;
+        letter-spacing: 0;
+    }
+
+    .badges {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+
+    .subnet-section {
+        padding: 8px 12px;
+    }
+
+    .subnet-bar {
+        height: 20px;
+    }
+
+    .subnet-info {
+        font-size: 0.72rem;
+        line-height: 1.4;
+    }
+
+    .history-list {
+        padding: 6px 10px;
+        gap: 4px;
+    }
+
+    .history-item {
+        padding: 3px 8px;
+        font-size: 0.75rem;
+    }
+
+    #cheatTable th,
+    #cheatTable td {
+        padding: 5px 8px;
+        font-size: 0.76rem;
+    }
 }
