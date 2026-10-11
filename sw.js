@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ipcalc-md3-v1';
+const CACHE_NAME = 'ipcalc-md3-v2';
 const PRECACHE_ASSETS = [
   './',
   './index.html',

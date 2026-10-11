@@ -230,32 +230,48 @@ function updateUrl(ip, mask, mask2) {
 function loadFromUrl() {
   let p = new URLSearchParams(window.location.search);
   let ip = p.get('ip');
-  if (ip) {
-    els.host.value = ip;
-    let m = p.get('mask');
-    if (m) els.mask1.value = m;
-    let m2 = p.get('mask2');
-    if (m2) els.mask2.value = m2;
-    return true;
+  let m = p.get('mask');
+  let m2 = p.get('mask2');
+  let loaded = false;
+  if (ip && ip.trim()) {
+    els.host.value = ip.trim();
+    loaded = true;
   }
-  return false;
+  if (m && m.trim()) {
+    els.mask1.value = m.trim();
+    loaded = true;
+  }
+  if (m2 && m2.trim()) {
+    els.mask2.value = m2.trim();
+    loaded = true;
+  }
+  return loaded;
 }
 
 /* ── Fő számítás ── */
-function calculate() {
+function calculate(saveToHistory = true) {
   let hi = els.host.value.trim();
   let mi = els.mask1.value.trim() || '24';
   let m2i = els.mask2.value.trim();
-  if (!hi) return;
+  if (!hi) {
+    hi = '192.168.0.1';
+    els.host.value = hi;
+  }
   let parts = hi.split('/');
   if (parts.length === 2) {
     hi = parts[0].trim();
     mi = parts[1].trim();
+    if (!hi) hi = '192.168.0.1';
     els.mask1.value = mi;
     els.host.value = hi;
   }
   let ipInt = ipToInt(hi);
-  let m1 = getMask(mi); if (!m1) return;
+  let m1 = getMask(mi);
+  if (!m1) {
+    mi = '24';
+    els.mask1.value = mi;
+    m1 = getMask(mi);
+  }
   let m2 = m2i ? getMask(m2i) : null;
   let mInt = m1.int, cidr = m1.len;
   let netInt = (ipInt & mInt) >>> 0;
@@ -301,10 +317,12 @@ function calculate() {
   updateBin();
   renderSubnet(netInt, m1, m2);
 
-  let entry = `${intToIp(ipInt)}/${cidr}`;
-  calcHistory = [entry, ...calcHistory.filter(h => h !== entry)].slice(0, 10);
-  try { localStorage.setItem('ipcalc_h', JSON.stringify(calcHistory)); } catch (e) { }
-  renderHistory();
+  if (saveToHistory) {
+    let entry = `${intToIp(ipInt)}/${cidr}`;
+    calcHistory = [entry, ...calcHistory.filter(h => h !== entry)].slice(0, 10);
+    try { localStorage.setItem('ipcalc_h', JSON.stringify(calcHistory)); } catch (e) { }
+    renderHistory();
+  }
   updateUrl(intToIp(ipInt), cidr, m2i || '');
 }
 
@@ -488,14 +506,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   els.calcForm?.addEventListener('submit', e => {
     e.preventDefault();
-    calculate();
+    calculate(true);
   });
 
   [els.host, els.mask1, els.mask2].forEach(el => {
     el?.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        calculate();
+        calculate(true);
       }
     });
   });
@@ -513,5 +531,11 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Előzmények törölve');
   });
 
-  if (!loadFromUrl()) calculate();
+  window.addEventListener('popstate', () => {
+    loadFromUrl();
+    calculate(false);
+  });
+
+  loadFromUrl();
+  calculate(false);
 });
