@@ -136,8 +136,6 @@ function row(label, ipInt, cidr, metaHtml, netSec) {
   let ip = intToIp(ipInt);
   let disp = ip;
   let copyVal = ip;
-  if (label === 'Hálózati maszk') { disp = ip + ' = /' + cidr; copyVal = ip; }
-  if (label === 'Hálózat') { disp = ip + '/' + cidr; copyVal = ip + '/' + cidr; }
   let bin = formatBinFast(ipInt, cidr);
   let binRaw = intToBin32(ipInt);
   return `<tr class="${netSec ? 'net-section' : ''}">
